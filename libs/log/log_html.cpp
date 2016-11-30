@@ -39,6 +39,19 @@ using namespace Err;
 using namespace Sys;
 using namespace Log;
 
+#if defined(__APPLE__)
+/******************************************************************************/
+int vdprintf(int fd, const char * format, ...)
+{
+	return 0;
+}
+/******************************************************************************/
+int dprintf(int fd, const char * format, ...)
+{
+	return 0;
+}
+#endif
+
 /******************************************************************************/
 LogHTML::LogHTML() :
     _level(0),

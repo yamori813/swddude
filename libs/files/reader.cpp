@@ -36,6 +36,14 @@
 using namespace Err;
 using namespace Files;
 
+#if defined(__APPLE__)
+/******************************************************************************/
+ssize_t getline(char **lineptr, size_t *n, FILE *stream)
+{
+	return 0;
+}
+#endif
+
 /******************************************************************************/
 Reader::Reader() :
     _path(Path(String::empty())),
