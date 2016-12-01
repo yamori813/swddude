@@ -12,3 +12,10 @@ profile/
 *.o
 *.elf
 *.bin
+
+# usb and ftdi header and library
+
+libusb.h
+ftdi.h
+libusb-1.0.a
+libftdi.a
