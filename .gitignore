@@ -17,5 +17,4 @@ profile/
 
 libusb.h
 ftdi.h
-libusb-1.0.a
-libftdi.a
+lib*
