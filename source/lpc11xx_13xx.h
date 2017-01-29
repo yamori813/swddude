@@ -26,7 +26,8 @@ namespace IAP
      */
     static rptr<ARM::thumb_code_t> const entry(0x1FFF1FF0);
 
-    static size_t const min_stack_bytes = 128;
+    // LPC81x use more stack memory than LPC11xx
+    static size_t const min_stack_bytes = 256;
     static size_t const min_stack_words = min_stack_bytes / sizeof(ARM::word_t);
 
     static size_t const max_command_words = 5;

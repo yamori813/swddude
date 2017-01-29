@@ -31,6 +31,8 @@
 #include "swd.h"
 #include "arm.h"
 
+#include "armv6m_v7m.h"
+
 #include "lpc11xx_13xx.h"
 
 #include "libs/error/error_stack.h"
@@ -52,6 +54,7 @@ using Err::Error;
 
 using namespace Log;
 using namespace ARM;
+using namespace ARMv6M_v7M;
 using namespace LPC11xx_13xx;
 
 using std::vector;
@@ -272,10 +275,26 @@ static Error program_flash(Target & target,
                            word_t const * program,
                            size_t word_count)
 {
-    size_t const bytes_per_block = 256;
+    rptr_const<word_t> cpuid_addr(SCB::CPUID);
+
+    word_t cpuid;
+    CheckRetry(target.read_word(cpuid_addr, &cpuid), 100);
+    debug(1, "CPUID = %08X", cpuid);
+
+    size_t bytes_per_block;
+    if(cpuid == 0x410CC600) {   // LPC810
+      bytes_per_block = 128;
+    } else {
+      bytes_per_block = 256;
+    }
     size_t const words_per_block = bytes_per_block / sizeof(word_t);
 
-    size_t const bytes_per_sector = 4096;
+    size_t bytes_per_sector;
+    if(cpuid == 0x410CC600) {   // LPC810
+      bytes_per_sector = 1024;
+    } else {
+      bytes_per_sector = 4096;
+    }
     size_t const words_per_sector = bytes_per_sector / sizeof(word_t);
 
     rptr<word_t> const ram_buffer(0x10000000);

@@ -126,7 +126,7 @@ Error identify_cpu(Target & target, TargetInfo *info)
         return Err::success;
     }
 
-    rptr_const<word_t> cpuid_addr(0xE000ED00);
+    rptr_const<word_t> cpuid_addr(SCB::CPUID);
 
     word_t cpuid;
     CheckRetry(target.read_word(cpuid_addr, &cpuid), 100);
@@ -139,13 +139,24 @@ Error identify_cpu(Target & target, TargetInfo *info)
 
     if (implementer == 0x41
             && arch_rev == 0xC
-            && partno == 0xC20)
+            && partno == 0xC20)	// LPC1114
     {
         info->arch = TargetInfo::arch_v6m;
         info->cpu = TargetInfo::cpu_cortex_m0;
         info->major_revision = variant;
         info->minor_revision = rev;
 
+        notice("CPU is Cortex-M0 r%up%u", variant, rev);
+    }
+    else if (implementer == 0x41
+		&& arch_rev == 0xC
+		&& partno == 0xC60)	// LPC810
+    {
+        info->arch = TargetInfo::arch_v6m;
+        info->cpu = TargetInfo::cpu_cortex_m0;
+        info->major_revision = variant;
+        info->minor_revision = rev;
+		
         notice("CPU is Cortex-M0 r%up%u", variant, rev);
     }
     else if (implementer == 0x41

@@ -24,6 +24,8 @@ namespace ARMv6M_v7M
  */
 namespace SCB
 {
+    static rptr<ARM::word_t> const CPUID(0xE000ED00);
+
     static rptr<ARM::word_t> const AIRCR(0xE000ED0C);
     static ARM::word_t const AIRCR_VECTKEY = 0x05FA << 16;
     static ARM::word_t const AIRCR_SYSRESETREQ = 1 << 2;
