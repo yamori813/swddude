@@ -180,7 +180,7 @@ Error identify_cpu(Target & target, TargetInfo *info)
         notice("Unrecognized CPUID info; heuristic detection failed.");
     }
 
-    if (implementer == 0x41)
+    if (info->arch)
     {
         rptr_const<word_t> devid_addr(SYSCON::DEVICE_ID);
 
