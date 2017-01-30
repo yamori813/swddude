@@ -67,6 +67,8 @@ namespace SYSCON
     static ARM::word_t const SYSMEMREMAP_MAP_USER_RAM   = 1 << 0;
     static ARM::word_t const SYSMEMREMAP_MAP_USER_FLASH = 2 << 0;
 
+    static rptr<ARM::word_t> const DEVICE_ID(0x400483F8);
+
 }  // namespace LPC11xx_13xx::SYSCON
 
 }  // namespace LPC11xx_13xx

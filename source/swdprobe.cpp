@@ -30,10 +30,14 @@
 #include "swd_mpsse.h"
 #include "swd.h"
 
+#include "lpctypes.h"
+
 #include "rptr.h"
 
 #include "armv6m_v7m.h"
 #include "arm.h"
+
+#include "lpc11xx_13xx.h"
 
 #include "libs/error/error_stack.h"
 #include "libs/log/log_default.h"
@@ -50,6 +54,7 @@ using Err::Error;
 
 using namespace ARM;
 using namespace ARMv6M_v7M;
+using namespace LPC11xx_13xx;
 
 using std::vector;
 
@@ -173,6 +178,23 @@ Error identify_cpu(Target & target, TargetInfo *info)
     else
     {
         notice("Unrecognized CPUID info; heuristic detection failed.");
+    }
+
+    if (implementer == 0x41)
+    {
+        rptr_const<word_t> devid_addr(SYSCON::DEVICE_ID);
+
+        word_t devid;
+        CheckRetry(target.read_word(devid_addr, &devid), 100);
+        notice("Device ID = %08X", devid);
+        int i;
+        for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 && 
+            (LPCtypes[i].id != devid); i--)
+            /* nothing */;
+        if (i != 0) {
+            notice("Device name = %s", LPCtypes[i].Product);
+        }
+
     }
     
     return Err::success;
