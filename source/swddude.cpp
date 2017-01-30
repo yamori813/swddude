@@ -35,6 +35,8 @@
 
 #include "lpc11xx_13xx.h"
 
+#include "lpctypes.h"
+
 #include "libs/error/error_stack.h"
 #include "libs/log/log_default.h"
 #include "libs/command_line/command_line.h"
@@ -277,24 +279,34 @@ static Error program_flash(Target & target,
 {
     rptr_const<word_t> cpuid_addr(SCB::CPUID);
 
-    word_t cpuid;
-    CheckRetry(target.read_word(cpuid_addr, &cpuid), 100);
-    debug(1, "CPUID = %08X", cpuid);
+    int devnum = 0;
+
+    // TODO this code is only support LPC chip
+    rptr_const<word_t> devid_addr(SYSCON::DEVICE_ID);
+
+    word_t devid;
+    CheckRetry(target.read_word(devid_addr, &devid), 100);
+    notice("Device ID = %08X", devid);
+
+    int i;
+    for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 &&
+        (LPCtypes[i].id != devid); i--)
+        /* nothing */;
+    Check(i ? Err::success : Err::failure); 
+    debug(1, "Device name = %s", LPCtypes[i].Product);
+    devnum = i;
 
     size_t bytes_per_block;
-    if(cpuid == 0x410CC600) {   // LPC810
+    // use small bufer at SRAM is under 2k bytes
+    if(LPCtypes[devnum].RAMSize <= 2) {
       bytes_per_block = 128;
     } else {
       bytes_per_block = 256;
     }
     size_t const words_per_block = bytes_per_block / sizeof(word_t);
 
-    size_t bytes_per_sector;
-    if(cpuid == 0x410CC600) {   // LPC810
-      bytes_per_sector = 1024;
-    } else {
-      bytes_per_sector = 4096;
-    }
+    // TODO allow all secter size
+    size_t bytes_per_sector = LPCtypes[devnum].SectorTable[0];
     size_t const words_per_sector = bytes_per_sector / sizeof(word_t);
 
     rptr<word_t> const ram_buffer(0x10000000);
