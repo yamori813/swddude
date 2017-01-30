@@ -64,42 +64,6 @@ Portions Copyright (c) by Aeolus Development 2004 http://www.aeolusdevelopment.c
 #define LPC_RAMSTART_LPC8XX     0x10000000L
 #define LPC_RAMBASE_LPC8XX      0x10000270L
 
-/* Return values used by NxpDownload(): reserving all values from 0x1000 to 0x1FFF */
-
-#define NO_ANSWER_WDT       0x1000
-#define NO_ANSWER_QM        0x1001
-#define NO_ANSWER_SYNC      0x1002
-#define NO_ANSWER_OSC       0x1003
-#define NO_ANSWER_RBV       0x1004
-#define NO_ANSWER_RPID      0x1005
-#define ERROR_WRITE_DATA    0x1006
-#define ERROR_WRITE_CRC     0x1007
-#define ERROR_WRITE_CRC2    0x1008
-#define PROGRAM_TOO_LARGE   0x1009
-
-#define USER_ABORT_SYNC     0x100A   /* User aborted synchronisation process */
-
-#define UNKNOWN_LPC         0x100B   /* Unknown LPC detected */
-
-#define UNLOCK_ERROR        0x1100   /* return value is 0x1100 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_PREP   0x1200   /* return value is 0x1200 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_ERAS   0x1300   /* return value is 0x1300 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_WRIT   0x1400   /* return value is 0x1400 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_PREP2  0x1500   /* return value is 0x1500 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_COPY   0x1600   /* return value is 0x1600 + NXP ISP returned value (0 to 255) */
-#define FAILED_RUN          0x1700   /* return value is 0x1700 + NXP ISP returned value (0 to 255) */
-#define WRONG_ANSWER_BTBNK  0x1800   /* return value is 0x1800 + NXP ISP returned value (0 to 255) */
-
-#if defined COMPILE_FOR_LPC21
-#ifndef WIN32
-#define LPC_BSL_PIN         13
-#define LPC_RESET_PIN       47
-#define LPC_RESET(in)       NAsetGPIOpin(LPC_RESET_PIN, (in))
-#define LPC_BSL(in)         NAsetGPIOpin(LPC_BSL_PIN,   (in))
-#endif // WIN32
-#endif // COMPILE_FOR_LPC21
-
-
 /* LPC_FLASHMASK
 *
 * LPC_FLASHMASK - bitmask to define the maximum size of the Filesize to download.
@@ -246,8 +210,6 @@ static const unsigned int SectorTable_8xx[] =
      1024,  1024,  1024,  1024,  1024,  1024,  1024,  1024,
      1024,  1024,  1024,  1024,  1024,  1024,  1024,  1024
 };
-
-static int unsigned SectorTable_RAM[]  = { 65000 };
 
 static LPC_DEVICE_TYPE LPCtypes[] =
 {
