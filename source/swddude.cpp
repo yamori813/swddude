@@ -282,16 +282,23 @@ static Error program_flash(Target & target,
     int devnum = 0;
 
     // TODO this code is only support LPC chip
-    rptr_const<word_t> devid_addr(SYSCON::DEVICE_ID);
+    rptr_const<word_t> devid_addr(SYSCON::LPC11XX_DEVICE_ID);
 
-    word_t devid;
-    CheckRetry(target.read_word(devid_addr, &devid), 100);
-    notice("Device ID = %08X", devid);
+    int i, j;
+    for (j = 0;j < 2; ++j) {
+        word_t devid;
+        CheckRetry(target.read_word(devid_addr, &devid), 100);
 
-    int i;
-    for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 &&
-        (LPCtypes[i].id != devid); i--)
-        /* nothing */;
+        for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 &&
+            (LPCtypes[i].id != devid); i--)
+            /* nothing */;
+        if(i != 0) {
+            notice("Device ID = %08X", devid);
+            break;
+        }
+        devid_addr = SYSCON::LPC8XX_DEVICE_ID;
+    }
+
     Check(i ? Err::success : Err::failure); 
     debug(1, "Device name = %s", LPCtypes[i].Product);
     devnum = i;

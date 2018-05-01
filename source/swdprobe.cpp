@@ -182,22 +182,26 @@ Error identify_cpu(Target & target, TargetInfo *info)
 
     if (info->arch)
     {
-        rptr_const<word_t> devid_addr(SYSCON::DEVICE_ID);
+        rptr_const<word_t> devid_addr(SYSCON::LPC11XX_DEVICE_ID);
 
-        word_t devid;
-        CheckRetry(target.read_word(devid_addr, &devid), 100);
-        notice("Device ID = %08X", devid);
-        int i;
-        for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 && 
-            (LPCtypes[i].id != devid); i--)
-            /* nothing */;
-        if (i != 0) {
-            notice("Device name = %s", LPCtypes[i].Product);
+        int j;
+        for (j = 0;j < 2; ++j) {
+            word_t devid;
+            CheckRetry(target.read_word(devid_addr, &devid), 100);
+            int i;
+            for (i = sizeof LPCtypes / sizeof LPCtypes[0] - 1; i > 0 &&
+                (LPCtypes[i].id != devid); i--)
+                /* nothing */;
+            if (i != 0) {
+                notice("Device ID = %08X", devid);
+                notice("Device name = %s", LPCtypes[i].Product);
+                return Err::success;
+            }
+            devid_addr = SYSCON::LPC8XX_DEVICE_ID;
         }
-
     }
     
-    return Err::success;
+    return Err::failure;
 }
 
 /*******************************************************************************
